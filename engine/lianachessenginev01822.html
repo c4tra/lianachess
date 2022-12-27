@@ -1,0 +1,285 @@
+<html>
+<head>
+    <title>lianachess v0.1.8.2.2</title>
+    <style type="text/css">
+        table {
+            border-collapse: collapse;
+            font-size: 25px;
+            text-align: center;
+        }
+
+        table tr td {
+            width: 70px;
+            height: 70px;
+            border: 2px solid black;
+            vertical-align: middle;
+            padding: 0;
+        }
+
+        #capturedPieces{
+            font-size: 18px;
+        }
+
+        #capturedPieces img {
+            width: 40px;
+            margin-right: 20px;
+        }
+
+        .piece {
+            width:60px;
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        /* Add styling for white and black squares */
+        td.black {
+            background-color: #999;
+        }
+
+        td.white {
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>lianachess v0.1.8.2.2 (cursedandbroken)</h1>
+    <table id="chessBoard">
+        <!-- Use JavaScript to populate the chessboard -->
+    </table>
+    <div id="capturedPieces">
+        <div id="blackCaptured">
+            <!-- Captured black pieces will be displayed here -->
+        </div>
+        <div id="whiteCaptured">
+            <!-- Captured white pieces will be displayed here -->
+        </div>
+    </div>
+	<table>
+  <tbody>
+    <tr>
+      <td id="0-0"></td>
+      <td id="0-1"></td>
+      <td id="0-2"></td>
+      <td id="0-3"></td>
+      <td id="0-4"></td>
+      <td id="0-5"></td>
+      <td id="0-6"></td>
+      <td id="0-7"></td>
+    </tr>
+    <tr>
+      <td id="1-0"></td>
+      <td id="1-1"></td>
+      <td id="1-2"></td>
+      <td id="1-3"></td>
+      <td id="1-4"></td>
+      <td id="1-5"></td>
+      <td id="1-6"></td>
+      <td id="1-7"></td>
+    </tr>
+    <!-- ... -->
+  </tbody>
+</table>
+</body>
+<script>
+// Set up the chessboard
+const chessBoard = document.getElementById('chessBoard');
+const rows = 8;
+const cols = 8;
+const white = 'white';
+const black = 'black';
+let turn = white;  // Track whose turn it is
+const capturedPieces = {
+    white: [],  // Array to store captured white pieces
+    black: []   // Array to store captured black pieces
+};
+
+// Initialize the chessboard with empty squares
+for (let i = 0; i < rows; i++) {
+    const row = document.createElement('tr');
+    for (let j = 0; j < cols; j++) {
+        const col = document.createElement('td');
+        col.setAttribute('id', `${i}-${j}`);  // Set the square's id to its coordinates
+        // Add a class to differentiate white and black squares
+        if ((i + j) % 2 === 0) {
+            col.classList.add('black');
+        } else {
+            col.classList.add('white');
+        }
+        row.appendChild(col);
+    }
+    chessBoard.appendChild(row);
+}
+
+// Set up the pieces
+const pieces = {
+    white: {
+        king: 'wK.png',
+        queen: 'wQ.png',
+        rook: 'wR.png',
+        bishop: 'wB.png',
+        knight: 'wN.png',
+        pawn: 'wP.png'
+    },
+    black: {
+        king: 'bK.png',
+        queen: 'bQ.png',
+        rook: 'bR.png',
+        bishop: 'bB.png',
+        knight: 'bN.png',
+        pawn: 'bP.png'
+    }
+};
+
+  // Populate the chessboard with pieces
+  const pieceKeys = Object.keys(pieces.white);  // Get the names of all the piece types
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      const square = document.getElementById(`${i}-${j}`);
+      if (i === 1) {
+        // Add white pawns
+        const pawn = document.createElement('img');
+        pawn.src = `pieces/${pieces.white.pawn}`;
+        pawn.classList.add('piece');
+        pawn.setAttribute('data-color', 'white');
+        pawn.setAttribute('data-type', 'pawn');
+        square.appendChild(pawn);
+      } else if (i === 6) {
+        // Add black pawns
+        const pawn = document.createElement('img');
+        pawn.src = `pieces/${pieces.black.pawn}`;
+        pawn.classList.add('piece');
+        pawn.setAttribute('data-color', 'black');
+        pawn.setAttribute('data-type', 'pawn');
+        square.appendChild(pawn);
+      } else if (i === 0) {
+        // Add white pieces
+        const pieceType = pieceKeys[j];
+        const piece = document.createElement('img');
+        piece.src = `pieces/${pieces.white[pieceType]}`;
+        piece.classList.add('piece');
+        piece.setAttribute('data-color', 'white');
+        piece.setAttribute('data-type', pieceType);
+        square.appendChild(piece);
+      } else if (i === 7) {
+        // Add black pieces
+        const pieceType = pieceKeys[j];
+        const piece = document.createElement('img');
+        piece.src = `pieces/${pieces.black[pieceType]}`;
+        piece.classList.add('piece');
+        piece.setAttribute('data-color', 'black');
+        piece.setAttribute('data-type', pieceType);
+        square.appendChild(piece);
+      }
+    }
+  }
+
+// Function to place a piece on the chessboard
+function placePiece(piece, row, col) {
+    const square = document.getElementById(`${row}-${col}`);
+    square.innerHTML = '';  // Clear any existing piece
+    const img = document.createElement('img');
+    img.setAttribute('src', piece);
+    img.classList.add('piece');
+    square.appendChild(img);
+}
+
+// Function to move a piece from one square to another
+function movePiece(startRow, startCol, endRow, endCol) {
+    // Check if it is a valid move
+    if (isValidMove(startRow, startCol, endRow, endCol)) {
+        const startSquare = document.getElementById(`${startRow}-${startCol}`);
+        const endSquare = document.getElementById(`${endRow}-${endCol}`);
+        // Check if the end square has a piece
+        if (endSquare.innerHTML !== '') {
+            // Capture the piece on the end square
+            capturedPieces[turn].push(endSquare.firstChild);
+            getCapturedPieces();
+        }
+        // Move the piece from the start square to the end square
+        endSquare.appendChild(startSquare.firstChild);
+        startSquare.innerHTML = '';
+        // Change turns
+        turn = getNextTurn();
+    }
+}
+
+// Function to get the captured pieces for each player
+function getCapturedPieces() {
+    const whiteCaptured = document.getElementById('whiteCaptured');
+    const blackCaptured = document.getElementById('blackCaptured');
+    whiteCaptured.innerHTML = '';
+    blackCaptured.innerHTML = '';
+    capturedPieces.white.forEach(piece => {
+        whiteCaptured.appendChild(piece);
+    });
+    capturedPieces.black.forEach(piece => {
+        blackCaptured.appendChild(piece);
+    });
+}
+
+// Function to check if a move is valid
+function isValidMove(startRow, startCol, endRow, endCol) {
+    // Add code here to check if the move is valid
+    // Return true if the move is valid, false if it is not
+    return true;  // Temporary placeholder
+}
+
+// Function to get the next turn
+function getNextTurn() {
+    return turn === white ? black : white;
+}
+
+// Add event listeners to the chessboard squares
+for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+        const square = document.getElementById(`${i}-${j}`);
+        square.addEventListener('click', () => {
+            // Add code here to handle a click on a square
+        });
+    }
+}
+
+// Add event listeners to all the pieces on the board
+const squares = document.querySelectorAll('td');
+squares.forEach(square => {
+    square.addEventListener('click', e => {
+        const piece = e.target;
+        if (piece.tagName === 'IMG') {
+            // A piece was clicked
+            if (piece.getAttribute('data-color') === turn) {
+                // It's the correct player's turn
+                // Highlight the square
+                squares.forEach(square => square.classList.remove('selected'));
+                square.classList.add('selected');
+            }
+        } else {
+            // A square was clicked
+            const selectedSquare = document.querySelector('.selected');
+            if (selectedSquare) {
+                // A piece is selected, try to move it to the clicked square
+                const selectedPiece = selectedSquare.firstChild;
+                if (square.firstChild === null) {
+                    // The square is empty, so the piece can be moved there
+                    square.appendChild(selectedPiece);
+                    // Un-highlight the selected square
+                    selectedSquare.classList.remove('selected');
+                    // Check if a piece was captured
+                    if (square.previousSibling && square.previousSibling.firstChild) {
+                        // A piece was captured
+                        const capturedPiece = square.previousSibling.firstChild;
+                        capturedPieces[capturedPiece.getAttribute('data-color')].push(capturedPiece);
+                        square.previousSibling.removeChild(capturedPiece);
+                    }
+                    // Switch turns
+                    turn = (turn === white) ? black : white;
+                } else {
+                    // The square is not empty, so the piece cannot be moved there
+                    squares.forEach(square => square.classList.remove('selected'));
+                }
+            }
+        }
+    });
+});
+
+</script>
+</html>
