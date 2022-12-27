@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>homosexuality</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: purple;
+    }
+
+    .code {
+      position: absolute;
+      font-family: monospace;
+      font-size: 10px;
+      color: black;
+      animation: drop .5s linear infinite;
+    }
+
+    @keyframes drop {
+      0% {
+        transform: translateY(-10%);
+      }
+      100% {
+        transform: translateY(100%);
+      }
+    }
+  </style>
+</head>
+<body>
+  <script>
+    const codes = [
+      "gay",
+      "homo",
+      "dyke",
+      "slay",
+      "imgay",
+      "oliviawilde<3",
+      "queen",
+      "gayyyyy",
+    ];
+
+    function createCode() {
+      const code = document.createElement("div");
+      code.classList.add("code");
+      code.innerText = codes[Math.floor(Math.random() * codes.length)];
+      code.style.left = `${Math.random() * 100}%`;
+      code.style.top = `${Math.random() * 100}%`;
+      code.style.animationDelay = `-${Math.random() * 5}s`;
+      document.body.appendChild(code);
+    }
+
+    setInterval(createCode, 1);
+  </script>
+</body>
+</html>
