@@ -1,0 +1,36 @@
+//style.css
+body {
+  font-family: Arial, Helvetica;
+  color: #000000;
+  background-color: #FFFFFF;
+}
+
+header {
+  text-align: center;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form label {
+  padding: 5px;
+  font-weight: bold;
+}
+
+.form input {
+  padding: 5px;
+  margin: 5px 0;
+}
+
+footer {
+  text-align: center;
+}
